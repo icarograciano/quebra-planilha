@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Como Quebrar Planilha do Excel - Quebra Planilha</title>
+  <!-- Inclua o link para o arquivo CSS do Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3550597346297371"
+  crossorigin="anonymous"></script>
+  <script>
+    function quebrarPlanilha() {
+      var linhasPorPlanilha = parseInt(document.getElementById("linhas").value);
+      var nomeAba = document.getElementById("aba").value.trim();
+
+      // Verificar se um arquivo foi selecionado
+      var fileInput = document.getElementById("planilha");
+      if (fileInput.files.length > 0) {
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          var data = new Uint8Array(e.target.result);
+          var workbook = XLSX.read(data, { type: 'array' });
+
+          // Verificar a quantidade total de linhas
+          var worksheet = workbook.Sheets[nomeAba];
+          if (!worksheet) {
+            alert("A aba da planilha especificada não foi encontrada.");
+            return;
+          }
+          var totalLinhas = XLSX.utils.sheet_to_json(worksheet).length;
+
+          // Calcular o número de planilhas necessárias
+          var numPlanilhas = Math.ceil(totalLinhas / linhasPorPlanilha);
+
+          // Quebrar a planilha em várias planilhas
+          var startRow = 0;
+          for (var i = 0; i < numPlanilhas; i++) {
+            var endRow = Math.min(startRow + linhasPorPlanilha, totalLinhas);
+            var newWorksheet = XLSX.utils.json_to_sheet(XLSX.utils.sheet_to_json(worksheet).slice(startRow, endRow));
+            var newWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, "Planilha");
+            var wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'array' });
+            var blob = new Blob([wbout], { type: 'application/octet-stream' });
+            var fileName = 'planilha_' + (i + 1) + '.xlsx';
+
+            // Criar o link de download e simular o clique
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.click();
+
+            startRow += linhasPorPlanilha;
+          }
+        };
+
+        reader.readAsArrayBuffer(file);
+      } else {
+        alert("Por favor, selecione um arquivo para quebrar.");
+      }
+    }
+  </script>
+  <h1 style="text-align: center;">Como Quebrar Planilha do Excel</h1>
+  <hr>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">
+
+      </div>
+      <div class="col-md-6">
+        <!-- Conteúdo Central -->
+        <div class="form-group">
+          <label for="planilha">1º Selecione o arquivo da planilha:</label>
+          <input type="file" id="planilha" accept=".xlsx">
+        </div>
+                <div class="form-group">
+          <label for="linhas">2º Informe a quantidade de linhas para quebra:</label>
+          <input type="number" id="linhas" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="aba">3º Informe o nome da aba da planilha:</label>
+          <input type="text" id="aba" class="form-control">
+        </div>
+        <div class="text-center">
+          <button onclick="quebrarPlanilha()" class="btn btn-primary">Quebrar Planilha</button>
+        </div>
+      </div>
+      <div class="col-md-3">
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Inclua o link para o arquivo JavaScript do Bootstrap -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
