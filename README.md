@@ -1,3 +1,5 @@
+Para acessar o proejeto no ar acesse: https://quebra-planilha.netlify.app/
+
 #Introdução
 
 Este é o README do projeto "Quebra Planilha", que contém o código-fonte para um aplicativo web que permite quebrar uma planilha do Excel em várias planilhas menores com base em um número específico de linhas. Neste documento, vamos explorar os recursos utilizados, explicar o que o código faz e como ele funciona.
